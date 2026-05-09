@@ -122,7 +122,7 @@ if(!userId){
 let myName = "";
 let roomId = "";
 let partnerUser = null;
-let seconds = 600;
+let seconds = 60;
 let timerInterval = null;
 let otherWantsExchange = false;
 let iWantExchange = false;
@@ -216,7 +216,7 @@ socket.on("matched",(data)=>{
 
 function startTimer(){
   clearInterval(timerInterval);
-  seconds = 600;
+  seconds = 60;
   timerInterval = setInterval(()=>{
     seconds--;
     const m = Math.floor(seconds/60);
