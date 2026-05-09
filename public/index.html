@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brey</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow:hidden}
+.screen{display:none;min-height:100vh;padding:28px}
+.active{display:flex;flex-direction:column}
+.center{align-items:center;justify-content:center;text-align:center}
+.logo{font-size:54px;font-weight:900;letter-spacing:-.08em;margin-bottom:10px}
+.sub{color:#999;margin:8px 0 20px}
+input{width:100%;max-width:360px;padding:16px;border-radius:18px;border:1px solid #333;background:#111;color:white;margin-top:10px;font-size:16px}
+button{width:100%;max-width:360px;padding:16px;border:0;border-radius:18px;background:#ffd60a;color:#000;font-weight:900;margin-top:14px;font-size:16px}
+button:disabled{opacity:.35}
+.ghost{background:#171717;color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;max-width:360px;justify-content:center;margin:12px 0}
+.chip{width:auto;padding:10px 13px;border-radius:999px;background:#171717;color:white;border:1px solid #333}
+.chip.selected{background:#ffd60a;color:#000}
+.waitWrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.wave{width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,214,10,.5);position:absolute;animation:wave 2s infinite}
+.wave2{animation-delay:.5s}.wave3{animation-delay:1s}
+@keyframes wave{from{transform:scale(.8);opacity:1}to{transform:scale(5);opacity:0}}
+.drop{width:40px;height:54px;background:#ffd60a;border-radius:58% 58% 66% 66%;transform:rotate(45deg);box-shadow:0 0 30px rgba(255,214,10,.35)}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.partner{font-weight:800;font-size:18px}
+.timer{color:#ffd60a;font-weight:900}
+#messages{flex:1;overflow:auto;padding:12px 0;display:flex;flex-direction:column}
+.msg{padding:12px 14px;border-radius:18px;margin:6px 0;max-width:78%;line-height:1.5}
+.me{background:#ffd60a;color:#000;align-self:flex-end}
+.them{background:#171717;color:#fff;align-self:flex-start}
+.system{align-self:center;color:#777;font-size:13px}
+.bar{display:flex;gap:10px}
+.bar input{flex:1;margin:0}
+.bar button{width:58px;margin:0}
+.exchange{background:#111;border:1px solid #222;border-radius:22px;padding:18px;margin:14px 0;text-align:center}
+.menu{display:none;background:#111;border:1px solid #222;border-radius:20px;padding:14px;margin-bottom:10px}
+.menu.show{display:block}
+.small{font-size:13px;color:#888}
+</style>
+</head>
+
+<body>
+
+<section id="start" class="screen active center">
+  <div class="logo">Brey</div>
+  <div id="openLabel" class="sub">OPEN 22:00 — 24:00</div>
+  <div class="sub">今夜、ちょっと誰かと話す？</div>
+
+  <input id="name" placeholder="ニックネーム" />
+  <input id="instagram" placeholder="Instagram ID（任意）" />
+  <input id="twitter" placeholder="X / Twitter ID（任意）" />
+
+
+    <div class="chips">
+  <button class="chip ageChip" data-age="10s">10代</button>
+  <button class="chip ageChip" data-age="20s">20代</button>
+  <button class="chip ageChip" data-age="30s">30代</button>
+  <button class="chip ageChip" data-age="40plus">40代+</button>
+</div>
+
+<div class="chips">
+    <button class="chip" data-hobby="music">音楽</button>
+    <button class="chip" data-hobby="hiphop">Hiphop</button>
+    <button class="chip" data-hobby="anime">アニメ</button>
+    <button class="chip" data-hobby="game">ゲーム</button>
+    <button class="chip" data-hobby="movie">映画</button>
+    <button class="chip" data-hobby="fashion">服</button>
+    <button class="chip" data-hobby="nightwalk">夜散歩</button>
+    <button class="chip" data-hobby="talk">話すだけ</button>
+  </div>
+
+  <button id="joinBtn">波に入る</button>
+  <p id="status" class="small"></p>
+</section>
+
+<section id="waiting" class="screen">
+  <div class="top"><div></div><div class="partner">Brey</div><div></div></div>
+  <div class="waitWrap">
+    <div class="wave"></div><div class="wave wave2"></div><div class="wave wave3"></div>
+    <div class="drop"></div>
+  </div>
+  <div style="text-align:center;margin-bottom:18px;color:#888">誰かを待っています...</div>
+  <button id="cancelBtn" class="ghost">キャンセル</button>
+</section>
+
+<section id="chat" class="screen">
+  <div class="top">
+    <button id="leaveBtn" class="ghost" style="width:52px;padding:0">×</button>
+    <div id="partner" class="partner">相手</div>
+    <div id="timer" class="timer">10:00</div>
+  </div>
+
+  <div id="menu" class="menu">
+    <button id="reportBtn" class="ghost">通報して終わる</button>
+    <button id="blockBtn" class="ghost">ブロックして終わる</button>
+  </div>
+
+  <button id="menuBtn" class="ghost" style="max-width:none;margin-bottom:8px">…</button>
+
+  <div id="messages"></div>
+
+  <form id="form" class="bar">
+    <input id="messageInput" placeholder="メッセージ" autocomplete="off" />
+    <button>➜</button>
+  </form>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+
+let userId = localStorage.getItem("brey_user_id");
+if(!userId){
+  userId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+
+  localStorage.setItem("brey_user_id", userId);
+}
+
+let myName = "";
+let roomId = "";
+let partnerUser = null;
+let seconds = 600;
+let timerInterval = null;
+let otherWantsExchange = false;
+let iWantExchange = false;
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function addMessage(text,type){
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function getHobbies(){
+  return [...document.querySelectorAll(".chip.selected")].map(b => b.dataset.hobby);
+}
+function getAge(){
+  const selected = document.querySelector(".ageChip.selected");
+  return selected ? selected.dataset.age : "";
+}
+
+document.querySelectorAll(".ageChip").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".ageChip").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+  };
+});
+
+
+document.querySelectorAll(".chip").forEach(btn=>{
+  btn.onclick = () => btn.classList.toggle("selected");
+});
+
+function isOpen(){
+  const h = new Date().getHours();
+  return h >= 22 && h < 24;
+}
+
+function applyOpen(){
+  const forceOpen = new URLSearchParams(location.search).get("open") === "1";
+  if(!isOpen() && !forceOpen){
+    joinBtn.disabled = true;
+    status.textContent = "CLOSED / 次は22:00";
+  }else{
+    joinBtn.disabled = false;
+    status.textContent = "接続準備OK";
+  }
+}
+
+applyOpen();
+
+joinBtn.onclick = () => {
+  myName = document.getElementById("name").value.trim() || "水滴";
+  const forceOpen = new URLSearchParams(location.search).get("open") === "1";
+
+  socket.emit("joinWave",{
+    userId,
+    name: myName,
+    instagram: document.getElementById("instagram").value.trim().replace(/^@/,""),
+    twitter: document.getElementById("twitter").value.trim().replace(/^@/,""),
+    hobbies: getHobbies(),
+    age: getAge(),
+    forceOpen
+  });
+
+  show("waiting");
+};
+
+cancelBtn.onclick = () => location.reload();
+
+socket.on("closed",()=>{
+  show("start");
+  status.textContent = "今はCLOSED / 22:00にまた来て";
+});
+
+socket.on("waiting",()=>show("waiting"));
+
+socket.on("matched",(data)=>{
+  roomId = data.roomId;
+  partnerUser = data.users.find(u => u.userId !== userId);
+  partner.textContent = partnerUser?.name || "相手";
+  messages.innerHTML = "";
+  show("chat");
+  addMessage("つながった","system");
+  startTimer();
+});
+
+function startTimer(){
+  clearInterval(timerInterval);
+  seconds = 600;
+  timerInterval = setInterval(()=>{
+    seconds--;
+    const m = Math.floor(seconds/60);
+    const s = String(seconds%60).padStart(2,"0");
+    timer.textContent = `${m}:${s}`;
+
+    if(seconds <= 0){
+      clearInterval(timerInterval);
+      showExchange();
+    }
+  },1000);
+}
+
+function showExchange(){
+  const div = document.createElement("div");
+  div.className = "exchange";
+  div.innerHTML = `
+    <h3>終わる？ 繋がる？</h3>
+    <button id="yesExchange">繋がる</button>
+    <button id="noExchange" class="ghost">終わる</button>
+  `;
+  messages.appendChild(div);
+
+  yesExchange.onclick = ()=>{
+    iWantExchange = true;
+    socket.emit("exchangeChoice",{roomId,choice:true});
+    checkExchange(div);
+  };
+
+  noExchange.onclick = ()=>location.reload();
+}
+
+socket.on("exchangeChoice",(choice)=>{
+  otherWantsExchange = choice;
+});
+
+function checkExchange(div){
+  if(otherWantsExchange && iWantExchange){
+    div.innerHTML = `
+      <h3>SNS交換OK</h3>
+      <p class="small">相手のSNS</p>
+      ${partnerUser?.instagram ? `<button onclick="window.open('https://instagram.com/${partnerUser.instagram}')">Instagram</button>` : ""}
+      ${partnerUser?.twitter ? `<button onclick="window.open('https://x.com/${partnerUser.twitter}')">X</button>` : ""}
+    `;
+  }else{
+    div.innerHTML += `<p class="small">相手の返事を待っています...</p>`;
+  }
+}
+
+messageInput.addEventListener("input",()=>{
+  if(roomId) socket.emit("typing",roomId);
+});
+
+socket.on("typing",()=>{
+  const old = document.getElementById("typing");
+  if(old) old.remove();
+  const div = document.createElement("div");
+  div.id = "typing";
+  div.className = "msg system";
+  div.textContent = "typing...";
+  messages.appendChild(div);
+  setTimeout(()=>div.remove(),1000);
+});
+
+form.onsubmit = (e)=>{
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  if(!text) return;
+  messageInput.value = "";
+  socket.emit("message",{roomId,text});
+  addMessage(text,"me");
+};
+
+socket.on("message",(text)=>addMessage(text,"them"));
+
+leaveBtn.onclick = ()=>{
+  socket.emit("leaveRoom",roomId);
+  location.reload();
+};
+
+socket.on("partnerLeft",()=>{
+  addMessage("相手が退出しました","system");
+});
+
+menuBtn.onclick = ()=>menu.classList.toggle("show");
+
+reportBtn.onclick = ()=>{
+  socket.emit("report",{roomId,reporterId:userId,reportedId:partnerUser?.userId});
+  location.reload();
+};
+
+blockBtn.onclick = ()=>{
+  socket.emit("block",{blockerId:userId,blockedId:partnerUser?.userId});
+  socket.emit("leaveRoom",roomId);
+  location.reload();
+};
+</script>
+</body>
+</html>
