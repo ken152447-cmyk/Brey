@@ -531,9 +531,9 @@ let exchangeShown = false;
 
 const steps = [
   { key:"name", title:"なんて呼ばれたい？", sub:"あとから変えられます。", type:"input", placeholder:"ニックネーム" },
-  { key:"age", title:"年代を選んで", sub:"近い年代の人を少し優先します。", type:"age" },
-  { key:"hobbies", title:"好きなものを選んで", sub:"複数OK。近い人を少し優先します。", type:"hobby" },
-  { key:"sns", title:"つながる先はある？", sub:"会話後、お互いが続けたい時だけ表示されます。", type:"sns" }
+  { key:"age", title:"年代は？", sub:"近い年代の人を少し優先します。", type:"age" },
+  { key:"hobbies", title:"趣味は？", sub:"複数OK。近い人を少し優先します。", type:"hobby" },
+  { key:"sns", title:"繋がる先はある？", sub:"会話後、お互いが続けたい時だけ表示されます。", type:"sns" }
 ];
 
 let currentStep = 0;
@@ -735,7 +735,7 @@ socket.on("matched",(data)=>{
   messages.innerHTML = "";
   show("chat");
 
-  addSystem("つながった");
+  addSystem("繋がりました");
   startTimer();
 });
 
