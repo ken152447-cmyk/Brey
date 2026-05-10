@@ -4,133 +4,740 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Brey</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow:hidden}
-.screen{display:none;min-height:100vh;padding:28px}
-.active{display:flex;flex-direction:column}
-.center{align-items:center;justify-content:center;text-align:center}
-.logo{font-size:54px;font-weight:900;letter-spacing:-.08em;margin-bottom:10px}
-.sub{color:#999;margin:8px 0 20px}
-input{width:100%;max-width:360px;padding:16px;border-radius:18px;border:1px solid #333;background:#111;color:white;margin-top:10px;font-size:16px}
-button{width:100%;max-width:360px;padding:16px;border:0;border-radius:18px;background:#ffd60a;color:#000;font-weight:900;margin-top:14px;font-size:16px}
-button:disabled{opacity:.35}
-.ghost{background:#171717;color:#fff}
-.chips{display:flex;gap:8px;flex-wrap:wrap;max-width:360px;justify-content:center;margin:12px 0}
-.chip{width:auto;padding:10px 13px;border-radius:999px;background:#171717;color:white;border:1px solid #333}
-.chip.selected{background:#ffd60a;color:#000}
-.waitWrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
-.wave{width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,214,10,.5);position:absolute;animation:wave 2s infinite}
-.wave2{animation-delay:.5s}.wave3{animation-delay:1s}
-@keyframes wave{from{transform:scale(.8);opacity:1}to{transform:scale(5);opacity:0}}
-.drop{width:40px;height:54px;background:#ffd60a;border-radius:58% 58% 66% 66%;transform:rotate(45deg);box-shadow:0 0 30px rgba(255,214,10,.35)}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.partner{font-weight:800;font-size:18px}
-.timer{color:#ffd60a;font-weight:900}
-#messages{flex:1;overflow:auto;padding:12px 0;display:flex;flex-direction:column}
-.msg{padding:12px 14px;border-radius:18px;margin:6px 0;max-width:78%;line-height:1.5}
-.me{background:#ffd60a;color:#000;align-self:flex-end}
-.them{background:#171717;color:#fff;align-self:flex-start}
-.system{align-self:center;color:#777;font-size:13px}
-.bar{display:flex;gap:10px}
-.bar input{flex:1;margin:0}
-.bar button{width:58px;margin:0}
-.exchange{background:#111;border:1px solid #222;border-radius:22px;padding:18px;margin:14px 0;text-align:center}
-.menu{display:none;background:#111;border:1px solid #222;border-radius:20px;padding:14px;margin-bottom:10px}
-.menu.show{display:block}
-.small{font-size:13px;color:#888}
+
+:root{
+  --bg:#000;
+  --card:#141414;
+  --card2:#1b1b1b;
+  --line:#2b2b2b;
+  --text:#fff;
+  --muted:#8f8f8f;
+  --accent:#ffd60a;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  overflow:hidden;
+}
+
+.screen{
+  display:none;
+  min-height:100vh;
+  padding:26px;
+}
+
+.active{
+  display:flex;
+  flex-direction:column;
+}
+
+.center{
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.logo{
+  font-size:56px;
+  font-weight:900;
+  letter-spacing:-.06em;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.mark{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 28px rgba(255,214,10,.35);
+  transform:rotate(-20deg);
+}
+
+h1,h2,h3,p{
+  margin:0;
+}
+
+.bigText{
+  font-size:30px;
+  font-weight:900;
+  line-height:1.35;
+}
+
+.sub{
+  color:var(--muted);
+  margin-top:18px;
+  font-size:16px;
+  line-height:1.6;
+}
+
+input{
+  width:100%;
+  padding:18px 20px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:#111;
+  color:var(--text);
+  font-size:17px;
+  outline:none;
+}
+
+input:focus{
+  border-color:var(--accent);
+}
+
+button{
+  border:0;
+  border-radius:20px;
+  padding:17px 20px;
+  background:var(--accent);
+  color:#000;
+  font-weight:900;
+  font-size:17px;
+}
+
+.ghost{
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--line);
+}
+
+.smallBtn{
+  padding:12px 16px;
+  font-size:14px;
+}
+
+.fullBtn{
+  width:100%;
+  margin-top:20px;
+}
+
+.topSmall{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:absolute;
+  top:20px;
+  left:0;
+  padding:0 22px;
+}
+
+.iconBtn{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.profileIcon{
+  font-size:22px;
+}
+
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:24px;
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+
+.chip{
+  width:auto;
+  padding:13px 16px;
+  border-radius:999px;
+  background:#111;
+  color:var(--text);
+  border:1px solid var(--line);
+}
+
+.chip.selected{
+  background:var(--accent);
+  color:#000;
+  border-color:var(--accent);
+}
+
+.onboardStep{
+  width:100%;
+  max-width:430px;
+}
+
+.stepNum{
+  color:var(--accent);
+  font-weight:900;
+  margin-bottom:20px;
+}
+
+/* waiting */
+.waitWrap{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.wave{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  border:1px solid rgba(255,214,10,.38);
+  position:absolute;
+  animation:wave 2.4s infinite;
+}
+
+.wave2{animation-delay:.65s}
+.wave3{animation-delay:1.25s}
+
+@keyframes wave{
+  from{transform:scale(.7);opacity:1}
+  to{transform:scale(5.2);opacity:0}
+}
+
+.drop{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 36px rgba(255,214,10,.45);
+  animation:pulse 1.6s infinite alternate;
+}
+
+@keyframes pulse{
+  from{transform:scale(.95)}
+  to{transform:scale(1.08)}
+}
+
+/* chat */
+.chatHeader{
+  height:72px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  border-bottom:1px solid var(--line);
+  margin:-26px -26px 0;
+  padding:18px 22px 12px;
+}
+
+.chatName{
+  font-size:24px;
+  font-weight:900;
+  flex:1;
+}
+
+.chatMenu{
+  position:absolute;
+  top:76px;
+  right:18px;
+  width:190px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  display:none;
+  z-index:5;
+}
+
+.chatMenu.show{
+  display:block;
+}
+
+.chatMenu button{
+  width:100%;
+  border-radius:0;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  border-bottom:1px solid var(--line);
+}
+
+.timerCenter{
+  text-align:center;
+  color:var(--accent);
+  font-weight:900;
+  padding:14px 0 8px;
+  font-size:18px;
+}
+
+#messages{
+  flex:1;
+  overflow:auto;
+  padding:8px 0 18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.msg{
+  max-width:76%;
+  padding:13px 16px;
+  border-radius:20px;
+  margin:6px 0;
+  line-height:1.45;
+  font-size:16px;
+}
+
+.me{
+  align-self:flex-end;
+  background:var(--accent);
+  color:#000;
+  border-bottom-right-radius:6px;
+}
+
+.them{
+  align-self:flex-start;
+  background:var(--card2);
+  color:var(--text);
+  border-bottom-left-radius:6px;
+}
+
+.system{
+  align-self:center;
+  color:var(--muted);
+  font-size:13px;
+  margin:12px 0;
+}
+
+.typingBubble{
+  align-self:flex-start;
+  background:var(--card2);
+  padding:14px 16px;
+  border-radius:20px;
+  border-bottom-left-radius:6px;
+  margin:6px 0;
+  display:flex;
+  gap:5px;
+  animation:pop .18s ease-out;
+}
+
+@keyframes pop{
+  from{transform:translateY(8px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#aaa;
+  animation:bounce 1s infinite;
+}
+
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
+
+@keyframes bounce{
+  0%,80%,100%{transform:translateY(0);opacity:.4}
+  40%{transform:translateY(-4px);opacity:1}
+}
+
+.inputWrap{
+  display:flex;
+  align-items:center;
+  background:#111;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:6px 8px 6px 16px;
+}
+
+.inputWrap input{
+  border:0;
+  background:transparent;
+  padding:12px 0;
+}
+
+.sendBtn{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  padding:0;
+  display:none;
+}
+
+.sendBtn.show{
+  display:block;
+}
+
+/* end */
+.endMark{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 48px rgba(255,214,10,.35);
+  margin-bottom:32px;
+}
+
+.endLinks{
+  width:100%;
+  max-width:390px;
+  margin-top:22px;
+}
+
+.linkCard{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  margin-top:12px;
+  color:white;
+  text-decoration:none;
+}
+
+.hidden{
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<section id="start" class="screen active center">
-  <div class="logo">Brey</div>
-  <div id="openLabel" class="sub">OPEN 22:00 — 24:00</div>
-  <div class="sub">今夜、ちょっと誰かと話す？</div>
-
-  <input id="name" placeholder="ニックネーム" />
-  <input id="instagram" placeholder="Instagram ID（任意）" />
-  <input id="twitter" placeholder="X / Twitter ID（任意）" />
-
-
-    <div class="chips">
-  <button class="chip ageChip" data-age="10s">10代</button>
-  <button class="chip ageChip" data-age="20s">20代</button>
-  <button class="chip ageChip" data-age="30s">30代</button>
-  <button class="chip ageChip" data-age="40plus">40代+</button>
-</div>
-
-<div class="chips">
-    <button class="chip" data-hobby="music">音楽</button>
-    <button class="chip" data-hobby="hiphop">Hiphop</button>
-    <button class="chip" data-hobby="anime">アニメ</button>
-    <button class="chip" data-hobby="game">ゲーム</button>
-    <button class="chip" data-hobby="movie">映画</button>
-    <button class="chip" data-hobby="fashion">服</button>
-    <button class="chip" data-hobby="nightwalk">夜散歩</button>
-    <button class="chip" data-hobby="talk">話すだけ</button>
+<section id="home" class="screen center active">
+  <div class="topSmall">
+    <div></div>
+    <button id="profileBtn" class="ghost iconBtn profileIcon">☷</button>
   </div>
 
-  <button id="joinBtn">波に入る</button>
-  <p id="status" class="small"></p>
+  <div class="logo">
+    <div class="mark"></div>
+    <span>Brey</span>
+  </div>
+
+  <h1 class="bigText" style="margin-top:54px;">
+    今夜、ちょっと誰かと話す？
+  </h1>
+
+  <p class="sub">
+    最大10分。いつでも抜けられます。
+  </p>
+
+  <button id="talkBtn" class="fullBtn" style="max-width:390px;margin-top:70px;">
+    誰かと話す
+  </button>
+
+  <p id="homeStatus" class="sub" style="font-size:14px;"></p>
+</section>
+
+<section id="onboard" class="screen center">
+  <div class="onboardStep">
+    <div id="stepNum" class="stepNum">1 / 4</div>
+    <h2 id="stepTitle" class="bigText"></h2>
+    <p id="stepSub" class="sub"></p>
+
+    <div id="stepContent" style="margin-top:34px;"></div>
+
+    <button id="nextBtn" class="fullBtn">次へ</button>
+    <button id="skipBtn" class="ghost fullBtn hidden">スキップ</button>
+  </div>
 </section>
 
 <section id="waiting" class="screen">
-  <div class="top"><div></div><div class="partner">Brey</div><div></div></div>
+  <div style="text-align:center;font-weight:900;">Brey</div>
+
   <div class="waitWrap">
-    <div class="wave"></div><div class="wave wave2"></div><div class="wave wave3"></div>
+    <div class="wave"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
     <div class="drop"></div>
   </div>
-  <div style="text-align:center;margin-bottom:18px;color:#888">誰かを待っています...</div>
-  <button id="cancelBtn" class="ghost">キャンセル</button>
+
+  <div style="text-align:center;margin-bottom:22px;">
+    <h2>誰かを待っています...</h2>
+    <p class="sub">まだ起きてる人を探しています</p>
+  </div>
+
+  <button id="cancelBtn" class="ghost fullBtn">キャンセル</button>
 </section>
 
 <section id="chat" class="screen">
-  <div class="top">
-    <button id="leaveBtn" class="ghost" style="width:52px;padding:0">×</button>
-    <div id="partner" class="partner">相手</div>
-    <div id="timer" class="timer">10:00</div>
+  <div class="chatHeader">
+    <button id="leaveBtn" class="ghost iconBtn">‹</button>
+    <div id="partner" class="chatName">相手</div>
+    <button id="menuBtn" class="ghost iconBtn">…</button>
   </div>
 
-  <div id="menu" class="menu">
-    <button id="reportBtn" class="ghost">通報して終わる</button>
-    <button id="blockBtn" class="ghost">ブロックして終わる</button>
+  <div id="chatMenu" class="chatMenu">
+    <button id="reportBtn">通報して終了</button>
+    <button id="blockBtn">ブロックして終了</button>
   </div>
 
-  <button id="menuBtn" class="ghost" style="max-width:none;margin-bottom:8px">…</button>
+  <div id="timer" class="timerCenter">10:00</div>
 
   <div id="messages"></div>
 
-  <form id="form" class="bar">
-    <input id="messageInput" placeholder="メッセージ" autocomplete="off" />
-    <button>➜</button>
+  <form id="form" class="inputWrap">
+    <input id="messageInput" placeholder="メッセージを送信" autocomplete="off" />
+    <button id="sendBtn" class="sendBtn">➜</button>
   </form>
 </section>
 
+<section id="end" class="screen center">
+  <div class="endMark"></div>
+
+  <h2 class="bigText">この会話は終了しました</h2>
+  <p class="sub">また新しい誰かと話しましょう</p>
+
+  <div id="snsLinks" class="endLinks hidden"></div>
+
+  <button id="nextWaveBtn" class="fullBtn" style="max-width:390px;">
+    次の誰かへ
+  </button>
+</section>
+
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
 const socket = io();
+
+const SESSION_SECONDS = 600; // テスト中は30とか60にしてOK
 
 let userId = localStorage.getItem("brey_user_id");
 if(!userId){
   userId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
-
   localStorage.setItem("brey_user_id", userId);
 }
+
+let profile = JSON.parse(localStorage.getItem("brey_profile") || "null");
+let editingProfile = false;
 
 let myName = "";
 let roomId = "";
 let partnerUser = null;
-let seconds = 60;
+let seconds = SESSION_SECONDS;
 let timerInterval = null;
-let otherWantsExchange = false;
-let iWantExchange = false;
+let otherWantsContinue = false;
+let iWantContinue = false;
+let exchangeShown = false;
+
+const steps = [
+  { key:"name", title:"なんて呼ばれたい？", sub:"あとから変えられます。", type:"input", placeholder:"ニックネーム" },
+  { key:"age", title:"年代を選んで", sub:"近い年代の人を少し優先します。", type:"age" },
+  { key:"hobbies", title:"好きなものを選んで", sub:"複数OK。近い人を少し優先します。", type:"hobby" },
+  { key:"sns", title:"つながる先はある？", sub:"会話後、お互いが続けたい時だけ表示されます。", type:"sns" }
+];
+
+let currentStep = 0;
+let draft = profile || {
+  name:"",
+  age:"",
+  hobbies:[],
+  instagram:"",
+  twitter:""
+};
 
 function show(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
+
+function saveProfile(){
+  localStorage.setItem("brey_profile", JSON.stringify(draft));
+  profile = draft;
+}
+
+function renderStep(){
+  const step = steps[currentStep];
+
+  stepNum.textContent = `${currentStep + 1} / ${steps.length}`;
+  stepTitle.textContent = step.title;
+  stepSub.textContent = step.sub;
+  stepContent.innerHTML = "";
+  skipBtn.classList.toggle("hidden", step.key !== "sns");
+
+  if(step.type === "input"){
+    stepContent.innerHTML = `<input id="stepInput" placeholder="${step.placeholder}" value="${draft.name || ""}" />`;
+  }
+
+  if(step.type === "age"){
+    stepContent.innerHTML = `
+      <div class="chips">
+        <button class="chip ageChip" data-age="10s">10代</button>
+        <button class="chip ageChip" data-age="20s">20代</button>
+        <button class="chip ageChip" data-age="30s">30代</button>
+        <button class="chip ageChip" data-age="40plus">40代+</button>
+      </div>
+    `;
+    document.querySelectorAll(".ageChip").forEach(btn=>{
+      if(draft.age === btn.dataset.age) btn.classList.add("selected");
+      btn.onclick = () => {
+        document.querySelectorAll(".ageChip").forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        draft.age = btn.dataset.age;
+      };
+    });
+  }
+
+  if(step.type === "hobby"){
+    const hobbies = [
+      ["music","音楽"],
+      ["hiphop","Hiphop"],
+      ["anime","アニメ"],
+      ["game","ゲーム"],
+      ["movie","映画"],
+      ["fashion","服"],
+      ["nightwalk","夜散歩"],
+      ["talk","話すだけ"]
+    ];
+
+    stepContent.innerHTML = `<div class="chips">${
+      hobbies.map(([id,label]) => `<button class="chip hobbyChip" data-hobby="${id}">${label}</button>`).join("")
+    }</div>`;
+
+    document.querySelectorAll(".hobbyChip").forEach(btn=>{
+      if(draft.hobbies.includes(btn.dataset.hobby)) btn.classList.add("selected");
+      btn.onclick = () => {
+        btn.classList.toggle("selected");
+        draft.hobbies = [...document.querySelectorAll(".hobbyChip.selected")].map(b=>b.dataset.hobby);
+      };
+    });
+  }
+
+  if(step.type === "sns"){
+    stepContent.innerHTML = `
+      <input id="instaInput" placeholder="Instagram ID（任意）" value="${draft.instagram || ""}" />
+      <div style="height:12px"></div>
+      <input id="twitterInput" placeholder="X / Twitter ID（任意）" value="${draft.twitter || ""}" />
+    `;
+  }
+
+  nextBtn.textContent = currentStep === steps.length - 1 ? "保存する" : "次へ";
+}
+
+nextBtn.onclick = () => {
+  const step = steps[currentStep];
+
+  if(step.type === "input"){
+    draft.name = document.getElementById("stepInput").value.trim() || "水滴";
+  }
+
+  if(step.type === "sns"){
+    draft.instagram = document.getElementById("instaInput").value.trim().replace(/^@/,"");
+    draft.twitter = document.getElementById("twitterInput").value.trim().replace(/^@/,"");
+  }
+
+  if(currentStep < steps.length - 1){
+    currentStep++;
+    renderStep();
+  }else{
+    saveProfile();
+    editingProfile = false;
+    show("home");
+  }
+};
+
+skipBtn.onclick = () => {
+  saveProfile();
+  editingProfile = false;
+  show("home");
+};
+
+profileBtn.onclick = () => {
+  draft = profile || draft;
+  currentStep = 0;
+  editingProfile = true;
+  renderStep();
+  show("onboard");
+};
+
+function ensureProfile(){
+  if(!profile){
+    currentStep = 0;
+    draft = {
+      name:"",
+      age:"",
+      hobbies:[],
+      instagram:"",
+      twitter:""
+    };
+    renderStep();
+    show("onboard");
+    return false;
+  }
+  return true;
+}
+
+function isOpen(){
+  const h = new Date().getHours();
+  return h >= 22 && h < 24;
+}
+
+function forceOpen(){
+  return new URLSearchParams(location.search).get("open") === "1";
+}
+
+function updateHomeStatus(){
+  if(isOpen() || forceOpen()){
+    homeStatus.textContent = "接続準備OK";
+    talkBtn.disabled = false;
+  }else{
+    homeStatus.textContent = "CLOSED / 次は22:00";
+    talkBtn.disabled = true;
+  }
+}
+
+updateHomeStatus();
+
+talkBtn.onclick = () => {
+  if(!ensureProfile()) return;
+
+  myName = profile.name || "水滴";
+
+  socket.emit("joinWave",{
+    userId,
+    name:myName,
+    age:profile.age,
+    hobbies:profile.hobbies || [],
+    instagram:profile.instagram || "",
+    twitter:profile.twitter || "",
+    forceOpen:forceOpen()
+  });
+
+  show("waiting");
+};
+
+cancelBtn.onclick = () => {
+  socket.emit("leaveRoom", roomId);
+  show("home");
+};
+
+socket.on("closed",()=>{
+  show("home");
+  homeStatus.textContent = "今はCLOSED / 22:00にまた来て";
+});
+
+socket.on("waiting",()=>show("waiting"));
+
+socket.on("matched",(data)=>{
+  roomId = data.roomId;
+  partnerUser = data.users.find(u => u.userId !== userId);
+
+  partner.textContent = partnerUser?.name || "相手";
+  messages.innerHTML = "";
+  show("chat");
+
+  addSystem("つながった");
+  startTimer();
+});
 
 function addMessage(text,type){
   const div = document.createElement("div");
@@ -140,179 +747,186 @@ function addMessage(text,type){
   messages.scrollTop = messages.scrollHeight;
 }
 
-function getHobbies(){
-  return [...document.querySelectorAll(".chip.selected")].map(b => b.dataset.hobby);
+function addSystem(text){
+  const div = document.createElement("div");
+  div.className = "system";
+  div.textContent = text;
+  messages.appendChild(div);
 }
-function getAge(){
-  const selected = document.querySelector(".ageChip.selected");
-  return selected ? selected.dataset.age : "";
-}
-
-document.querySelectorAll(".ageChip").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".ageChip").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-  };
-});
-
-
-document.querySelectorAll(".chip").forEach(btn=>{
-  btn.onclick = () => btn.classList.toggle("selected");
-});
-
-function isOpen(){
-  const h = new Date().getHours();
-  return h >= 22 && h < 24;
-}
-
-function applyOpen(){
-  const forceOpen = new URLSearchParams(location.search).get("open") === "1";
-  if(!isOpen() && !forceOpen){
-    joinBtn.disabled = true;
-    status.textContent = "CLOSED / 次は22:00";
-  }else{
-    joinBtn.disabled = false;
-    status.textContent = "接続準備OK";
-  }
-}
-
-applyOpen();
-
-joinBtn.onclick = () => {
-  myName = document.getElementById("name").value.trim() || "水滴";
-  const forceOpen = new URLSearchParams(location.search).get("open") === "1";
-
-  socket.emit("joinWave",{
-    userId,
-    name: myName,
-    instagram: document.getElementById("instagram").value.trim().replace(/^@/,""),
-    twitter: document.getElementById("twitter").value.trim().replace(/^@/,""),
-    hobbies: getHobbies(),
-    age: getAge(),
-    forceOpen
-  });
-
-  show("waiting");
-};
-
-cancelBtn.onclick = () => location.reload();
-
-socket.on("closed",()=>{
-  show("start");
-  status.textContent = "今はCLOSED / 22:00にまた来て";
-});
-
-socket.on("waiting",()=>show("waiting"));
-
-socket.on("matched",(data)=>{
-  roomId = data.roomId;
-  partnerUser = data.users.find(u => u.userId !== userId);
-  partner.textContent = partnerUser?.name || "相手";
-  messages.innerHTML = "";
-  show("chat");
-  addMessage("つながった","system");
-  startTimer();
-});
 
 function startTimer(){
   clearInterval(timerInterval);
-  seconds = 60;
+  seconds = SESSION_SECONDS;
+  timer.textContent = formatTime(seconds);
+
   timerInterval = setInterval(()=>{
     seconds--;
-    const m = Math.floor(seconds/60);
-    const s = String(seconds%60).padStart(2,"0");
-    timer.textContent = `${m}:${s}`;
+    if(seconds < 0) seconds = 0;
+
+    timer.textContent = formatTime(seconds);
 
     if(seconds <= 0){
       clearInterval(timerInterval);
-      showExchange();
+      showContinueChoice();
     }
   },1000);
 }
 
-function showExchange(){
+function formatTime(sec){
+  const m = Math.floor(sec/60);
+  const s = String(sec%60).padStart(2,"0");
+  return `${m}:${s}`;
+}
+
+function showContinueChoice(){
+  if(exchangeShown) return;
+  exchangeShown = true;
+
   const div = document.createElement("div");
-  div.className = "exchange";
+  div.className = "card";
+  div.style.margin = "18px auto";
   div.innerHTML = `
-    <h3>終わる？ 繋がる？</h3>
-    <button id="yesExchange">繋がる</button>
-    <button id="noExchange" class="ghost">終わる</button>
+    <h3 style="text-align:center;">続ける？</h3>
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button id="continueYes" style="flex:1;">続ける</button>
+      <button id="continueNo" class="ghost" style="flex:1;">終わる</button>
+    </div>
+    <p class="sub" style="text-align:center;font-size:13px;">相手の返事を待っています...</p>
   `;
   messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 
-  yesExchange.onclick = ()=>{
-    iWantExchange = true;
-    socket.emit("exchangeChoice",{roomId,choice:true});
-    checkExchange(div);
+  document.getElementById("continueYes").onclick = () => {
+    iWantContinue = true;
+    socket.emit("exchangeChoice",{ roomId, choice:true });
+    checkEnd();
   };
 
-  noExchange.onclick = ()=>location.reload();
+  document.getElementById("continueNo").onclick = () => {
+    iWantContinue = false;
+    socket.emit("exchangeChoice",{ roomId, choice:false });
+    goEnd(false);
+  };
 }
 
 socket.on("exchangeChoice",(choice)=>{
-  otherWantsExchange = choice;
+  otherWantsContinue = choice;
+  checkEnd();
 });
 
-function checkExchange(div){
-  if(otherWantsExchange && iWantExchange){
-    div.innerHTML = `
-      <h3>SNS交換OK</h3>
-      <p class="small">相手のSNS</p>
-      ${partnerUser?.instagram ? `<button onclick="window.open('https://instagram.com/${partnerUser.instagram}')">Instagram</button>` : ""}
-      ${partnerUser?.twitter ? `<button onclick="window.open('https://x.com/${partnerUser.twitter}')">X</button>` : ""}
-    `;
-  }else{
-    div.innerHTML += `<p class="small">相手の返事を待っています...</p>`;
+function checkEnd(){
+  if(iWantContinue && otherWantsContinue){
+    goEnd(true);
   }
 }
 
+function goEnd(showSNS){
+  clearInterval(timerInterval);
+  show("end");
+
+  snsLinks.innerHTML = "";
+  snsLinks.classList.toggle("hidden", !showSNS);
+
+  if(showSNS){
+    if(partnerUser?.instagram){
+      snsLinks.innerHTML += `
+        <a class="linkCard" href="https://instagram.com/${partnerUser.instagram}" target="_blank">
+          <div>
+            <b>Instagram</b><br>
+            <span class="sub">@${partnerUser.instagram}</span>
+          </div>
+          <div>開く</div>
+        </a>
+      `;
+    }
+
+    if(partnerUser?.twitter){
+      snsLinks.innerHTML += `
+        <a class="linkCard" href="https://x.com/${partnerUser.twitter}" target="_blank">
+          <div>
+            <b>X</b><br>
+            <span class="sub">@${partnerUser.twitter}</span>
+          </div>
+          <div>開く</div>
+        </a>
+      `;
+    }
+  }
+}
+
+nextWaveBtn.onclick = () => {
+  location.reload();
+};
+
 messageInput.addEventListener("input",()=>{
+  sendBtn.classList.toggle("show", messageInput.value.trim().length > 0);
   if(roomId) socket.emit("typing",roomId);
 });
 
 socket.on("typing",()=>{
   const old = document.getElementById("typing");
   if(old) old.remove();
+
   const div = document.createElement("div");
   div.id = "typing";
-  div.className = "msg system";
-  div.textContent = "typing...";
+  div.className = "typingBubble";
+  div.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
   messages.appendChild(div);
-  setTimeout(()=>div.remove(),1000);
+  messages.scrollTop = messages.scrollHeight;
+
+  setTimeout(()=>{
+    const t = document.getElementById("typing");
+    if(t) t.remove();
+  },1200);
 });
 
 form.onsubmit = (e)=>{
   e.preventDefault();
   const text = messageInput.value.trim();
   if(!text) return;
+
   messageInput.value = "";
+  sendBtn.classList.remove("show");
+
   socket.emit("message",{roomId,text});
   addMessage(text,"me");
 };
 
-socket.on("message",(text)=>addMessage(text,"them"));
+socket.on("message",(text)=>{
+  const old = document.getElementById("typing");
+  if(old) old.remove();
+  addMessage(text,"them");
+});
 
 leaveBtn.onclick = ()=>{
   socket.emit("leaveRoom",roomId);
-  location.reload();
+  goEnd(false);
 };
 
 socket.on("partnerLeft",()=>{
-  addMessage("相手が退出しました","system");
+  addSystem("相手が退出しました");
+  setTimeout(()=>goEnd(false),900);
 });
 
-menuBtn.onclick = ()=>menu.classList.toggle("show");
+menuBtn.onclick = ()=>{
+  chatMenu.classList.toggle("show");
+};
 
 reportBtn.onclick = ()=>{
   socket.emit("report",{roomId,reporterId:userId,reportedId:partnerUser?.userId});
-  location.reload();
+  goEnd(false);
 };
 
 blockBtn.onclick = ()=>{
   socket.emit("block",{blockerId:userId,blockedId:partnerUser?.userId});
   socket.emit("leaveRoom",roomId);
-  location.reload();
+  goEnd(false);
 };
+
+if(!profile){
+  ensureProfile();
+}
 </script>
+
 </body>
 </html>
